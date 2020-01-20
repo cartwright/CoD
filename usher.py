@@ -29,11 +29,9 @@ bot = commands.Bot(command_prefix='!')
 async def on_ready():
     now = datetime.datetime.now().timestamp()
     pid = os.getpid()
-    f = open(log, "a")
-    f.write(f'{bot.user.name} has connected to Discord @ '
-            f'{now} on {pid}\n')
-    f.close()
-    on_days_end
+    with open(log, "a") as f:
+        f.write(f'{bot.user.name} has connected to Discord @ '
+                f'{now} on {pid}\n')
 
 
 # handle events properly
@@ -45,13 +43,22 @@ async def on_command_error(ctx, error):
     elif isinstance(error, commands.errors.CommandNotFound):
         await ctx.send("I don't know how to do that. Type !help to see what "
                        "I can do.")
+    else :
+        with open(log, "a") as f:
+            f.write(str(discord.DiscordException)+"\n")
+
 
 # daily sweep of the lobby
-async def on_days_end():
+#sync def on_days_end(ctx):
     # at the stroke of midnight
-    if discord.TextChannel(
-    await channels.lobby.purge()
-    await channel.send('The Lobby has been swept. Good morning.')
+#   lobby = ctx.message.guild.TextChannel.name
+#   await lobby.purge()
+#   await lobby.send('The Lobby has been swept. Good morning.')
+
+@bot.command(name="sweep", help="clears all messages in chat")
+async def sweep(ctx):
+    # Clear messages in the chat
+    await ctx.channel.purge()
 
 # new user direct message
 async def on_member_join(member):
