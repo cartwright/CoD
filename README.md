@@ -4,7 +4,7 @@ Concord on Discord is a discord server born of an attempt to create a viable bib
 
 ## Usage
 
-This repository is a collection of bots written in python. These bots are built around the following discord server structure:
+This repository is a bot and it's files written in python. This bot is built around the following discord server structure:
 
 #### Concord on Discord
 - welcome
@@ -16,11 +16,13 @@ This repository is a collection of bots written in python. These bots are built 
 
 and there are three permission levels: masses, student, and teacher. 
 
-The general concept is that anyone can join with an unlimited join link. They are given masses permissions. All they see is the lobby and the course-catalog. The first bot, Usher, acts as a greeter/bouncer for the lobby. Usher steers people to the course-catalog where they can then deal with the second bot, Dean.
+The general concept is that anyone can join with an unlimited join link. They are given masses permissions. All they see is the lobby and the course-catalog. Usher acts as a greeter/bouncer for the lobby. Usher steers people to the course-catalog where they can then deal with Dean.
 
 Dean keeps track of students and teachers and studies. If an application is accepted by Dean from one of the masses, they are granted student permissions, and they can enter the bible study they applied for. Dean will also deal with teachers in setting up studies. Studies are created with an agreed upon deletion date.
 
-The third bot, Luther, recites ESV bible verses and Book of Concord passages.
+Luther recites ESV bible verses and Book of Concord passages.
+
+Lawrence sweeps the lobby and performs other menial tasks.
 
 ## Attribution
 Our List of Dirty, Naughty, Obscene, and Otherwise Bad Words
@@ -28,4 +30,4 @@ Our List of Dirty, Naughty, Obscene, and Otherwise Bad Words
 https://creativecommons.org/licenses/by/4.0/
 
 ## License
-[BSD-3-Clause](https://opensource.org/licenses/BSD-3-Clause)
+[BSD-3-Clause](https://github.com/cartwright/CoD/blob/master/bsd3clause_license)
