@@ -15,12 +15,12 @@ import time
 from discord.ext import commands
 from dotenv import load_dotenv
 
+
 # globals
 logFILE = "/home/jeremy/codbot/logs/bots.log"
 cogsDIR = "/home/jeremy/codbot/cogs/"
 studiesDIR = "/home/jeremy/codbot/studies/"
-
-# get sensitive data
+# sensitive globals
 load_dotenv()
 token = os.getenv('DISCORD_TOKEN')
 
@@ -30,11 +30,8 @@ bot = commands.Bot(command_prefix='!')
 
 
 # proof of successful connection and cog loading
-# borrowed heavily from:
-# https://github.com/Peter-Crawley/rdpdb/blob/master/rbpdb.py
 @bot.event
 async def on_ready():
-    fail = []
     t = time.localtime()
     ctime = time.strftime("%H:%M:%S||%D", t)
     pid = os.getpid()
@@ -63,6 +60,10 @@ async def botty(ctx):
 # handle events properly
 @bot.event
 async def on_command_error(ctx, error):
+    t = time.localtime()
+    ctime = time.strftime("%H:%M:%S||%D", t)
+    e = error
+
     if isinstance(error, commands.errors.MissingRole):
         await ctx.send('You do not have the correct role for this command.'
                        '\n Type !help for a list of commands.')
@@ -70,8 +71,25 @@ async def on_command_error(ctx, error):
         await ctx.send("I don't know how to do that. Type !help to see what "
                        "I can do.")
     else :
-        with open(log, "a") as f:
-            f.write(str(discord.DiscordException)+"\n")
+        with open(logFILE, "a") as f:
+            f.write(f'{e}{ctime}\n')
+
+
+# reload modules instead of killing codbot all the time...
+@bot.command(name='reload', hidden=True)
+@commands.is_owner()
+async def CogReload(self, ctx, *, cog : str):
+    """command which reloads a module.
+    remember to use dot path, eg: cogs.luther"""
+
+    try:
+        self.bot.unload_extension(cog)
+        self.bot.load_extension(cog)
+    except Exception as e:
+        await ctx.send('\N{PISTOL}')
+        await ctx.send('{}: {}'.format(type(e).__name__, e))
+    else:
+        await ctx.send('\N{OK HAND SIGN}')
 
 
 bot.run(token)
