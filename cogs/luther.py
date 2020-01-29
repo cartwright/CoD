@@ -10,13 +10,13 @@
 
 import os
 import discord
-import sys
 import requests
-from discord.ext import commands
 from dotenv import load_dotenv
+from discord.ext import commands
+
 
 # globals
-logFILE = '/home/jeremy/codbot/logs/bots.log'
+logFILE = "/home/jeremy/codbot/logs/bots.log"
 # sensitive globals
 load_dotenv()
 API_KEY = os.getenv('ESV_API_KEY')
@@ -26,23 +26,21 @@ API_URL = os.getenv('ESV_API_URL')
 class LutherCog(commands.Cog):
     """LutherCog: knows things, looks cool."""
 
-    # variables
-    global API_KEY
-    global API_URL
-
     def __init__(self, bot):
         self.bot = bot
 
 
     @commands.command(name="verse", help="Retrieves an ESV bible verse.")
-    async def verse(self, ctx):
+    async def verse(self, ctx, p: str):
 
         global API_KEY
         global API_URL
+        global logFILE
 
         try:
-            passage = 'John 3:16'
-            params = {'q': passage,
+            # wtf = p
+            # passage = 'John 3:16'
+            params = {'q': p,
                 'include-headings': False,
                 'include-footnotes': False,
                 'include-verse-numbers': False,
@@ -53,16 +51,18 @@ class LutherCog(commands.Cog):
 
             response = requests.get(API_URL, params=params, headers=headers)
             passages = response.json()['passages']
-            passage = passages[0].strip() if passages else 'Error: Not Found'
-            await ctx.send(passage)
+            p = passages[0].strip() if passages else 'Error: Not Found'
+            await ctx.send(p)
         except Exception as e:
             with open(logFILE, "a") as f:
                 f.write(f'**ERROR: {type(e).__name__} - {e}\n')
 
 
-    @commands.command(name="luther")
+    # test whether loaded or not
+    @commands.command(name="luther", hidden=True)
+    @commands.is_owner()
     async def lutty(self, ctx):
-        r = "luther loaded."
+        r = "luther loaded. really."
         await ctx.send(r)
 
 
