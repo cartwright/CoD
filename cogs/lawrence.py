@@ -9,6 +9,7 @@
 #  lawrence: a helper file for the CoDbot
 
 import discord
+import time
 from discord.ext import commands
 
 
@@ -19,11 +20,18 @@ class LawrenceCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-    @commands.command(name="lawrence")
+    # test whether loaded or not
+    @commands.command(name="lawrence", hidden=True)
+    @commands.is_owner()
     async def lawty(self, ctx):
         r = "lawrence loaded."
         await ctx.send(r)
+
+
+    async def getTime():
+        t = time.localtime()
+        ctime = time.strftime('%H:%M:%S||%D')
+        return ctime
 
 
 """
