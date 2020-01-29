@@ -59,8 +59,6 @@ async def botty(ctx):
 # handle events properly
 @bot.event
 async def on_command_error(ctx, error):
-    # t = time.localtime()
-    # ctime = time.strftime("%H:%M:%S||%D", t)
     t = await LawrenceCog.getTime()
     e = error
 
