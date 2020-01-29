@@ -19,8 +19,9 @@ class DeanCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-    @commands.command(name="dean")
+    # test whether loaded or not
+    @commands.command(name="dean", hidden=True)
+    @commands.is_owner()
     async def deaty(self, ctx):
         r = "dean loaded."
         await ctx.send(r)
