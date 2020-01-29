@@ -28,6 +28,7 @@ Lawrence sweeps the lobby and performs other menial tasks.
 Our List of Dirty, Naughty, Obscene, and Otherwise Bad Words
 © 2012–2019 Shutterstock, Inc.
 https://creativecommons.org/licenses/by/4.0/
+Unless otherwise indicated, all Scripture quotations are from the ESV® Bible (The Holy Bible, English Standard Version®), copyright © 2001 by Crossway, a publishing ministry of Good News Publishers. Used by permission. All rights reserved. You may not copy or download more than 500 consecutive verses of the ESV Bible or more than one half of any book of the ESV Bible.
 
 ## License
 [BSD-3-Clause](https://github.com/cartwright/CoD/blob/master/bsd3clause_license)
