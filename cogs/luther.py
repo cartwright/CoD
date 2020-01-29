@@ -30,6 +30,10 @@ class LutherCog(commands.Cog):
         self.bot = bot
 
 
+    # TODO change verse to accept **kwargs or *args and make linter
+
+
+    # Retreive ESV bible verses
     @commands.command(name="verse", help="Retrieves an ESV bible verse.")
     async def verse(self, ctx, p: str):
 
@@ -38,13 +42,11 @@ class LutherCog(commands.Cog):
         global logFILE
 
         try:
-            # wtf = p
-            # passage = 'John 3:16'
             params = {'q': p,
                 'include-headings': False,
                 'include-footnotes': False,
                 'include-verse-numbers': False,
-                'include-short-copyright': False,
+                'include-short-copyright': True,
                 'include-passage-references': False}
 
             headers = {'Authorization': 'Token %s' % API_KEY}
@@ -58,11 +60,15 @@ class LutherCog(commands.Cog):
                 f.write(f'**ERROR: {type(e).__name__} - {e}\n')
 
 
+    # TODO Concordance
+    # TODO Book of Concord
+
+
     # test whether loaded or not
     @commands.command(name="luther", hidden=True)
     @commands.is_owner()
     async def lutty(self, ctx):
-        r = "luther loaded. really."
+        r = "luther loaded."
         await ctx.send(r)
 
 
