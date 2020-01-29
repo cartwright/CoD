@@ -10,19 +10,16 @@
 
 import os
 import discord
-import sched
-import time
 from discord.ext import commands
 from dotenv import load_dotenv
+from cogs.lawrence import LawrenceCog
 
 
 # globals
 logFILE = "/home/jeremy/codbot/logs/bots.log"
-cogsDIR = "/home/jeremy/codbot/cogs/"
-studiesDIR = "/home/jeremy/codbot/studies/"
 # sensitive globals
 load_dotenv()
-token = os.getenv('DISCORD_TOKEN')
+TOKEN = os.getenv('DISCORD_TOKEN')
 
 
 # assign prefix
@@ -32,8 +29,7 @@ bot = commands.Bot(command_prefix='!')
 # proof of successful connection and cog loading
 @bot.event
 async def on_ready():
-    t = time.localtime()
-    ctime = time.strftime("%H:%M:%S||%D", t)
+    t = await LawrenceCog.getTime()
     pid = os.getpid()
     initalCogs = ['cogs.usher',
                   'cogs.dean',
@@ -43,15 +39,18 @@ async def on_ready():
     if __name__ == '__main__':
         for cog in initalCogs:
             try: bot.load_extension(cog)
-            except:
+            except Exception as e:
                 with open(logFILE, "a") as f:
-                    f.write(f'Failed to load {cog} @ {ctime}\n')
+                    f.write(f'Failed to load {cog} @ {t}\n'
+                           f'{e}\n')
         with open(logFILE, "a") as f:
             f.write(f'{bot.user.name} has connected to Discord @ '
-                    f'{ctime} on {pid}\n')
+                    f'{t} on {pid}\n')
 
 
-@bot.command(name="bot")
+# test whether loaded or not
+@bot.command(name="bot", hidden=True)
+@commands.is_owner()
 async def botty(ctx):
     r = "bot loaded."
     await ctx.send(r)
@@ -60,8 +59,9 @@ async def botty(ctx):
 # handle events properly
 @bot.event
 async def on_command_error(ctx, error):
-    t = time.localtime()
-    ctime = time.strftime("%H:%M:%S||%D", t)
+    # t = time.localtime()
+    # ctime = time.strftime("%H:%M:%S||%D", t)
+    t = await LawrenceCog.getTime()
     e = error
 
     if isinstance(error, commands.errors.MissingRole):
@@ -72,24 +72,32 @@ async def on_command_error(ctx, error):
                        "I can do.")
     else :
         with open(logFILE, "a") as f:
-            f.write(f'{e}{ctime}\n')
+            f.write(f'{e}{t}\n')
 
 
 # reload modules instead of killing codbot all the time...
 @bot.command(name='reload', hidden=True)
 @commands.is_owner()
-async def CogReload(self, ctx, *, cog : str):
+async def cogReload(self, cog: str):
     """command which reloads a module.
     remember to use dot path, eg: cogs.luther"""
 
+    t = await LawrenceCog.getTime()
+
+    global logFILE
+
     try:
-        self.bot.unload_extension(cog)
-        self.bot.load_extension(cog)
+        self.bot.reload_extension(cog)
     except Exception as e:
-        await ctx.send('\N{PISTOL}')
-        await ctx.send('{}: {}'.format(type(e).__name__, e))
-    else:
-        await ctx.send('\N{OK HAND SIGN}')
+        with open(logFILE, "a") as f:
+            await f.write(f'{e}{t}\n')
 
 
-bot.run(token)
+# shutdown bot
+@bot.command(name='quit', hidden=True)
+@commands.is_owner()
+async def shutdown(ctx):
+    await ctx.bot.logout()
+
+
+bot.run(TOKEN)
