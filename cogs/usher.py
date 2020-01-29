@@ -19,8 +19,9 @@ class UsherCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-
-    @commands.command(name="usher")
+    # test whether loaded or not
+    @commands.command(name="usher", hidden=True)
+    @commands.is_owner()
     async def ushty(self, ctx):
         r = "usher loaded."
         await ctx.send(r)
