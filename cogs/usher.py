@@ -25,7 +25,9 @@ class UsherCog(commands.Cog):
     async def ushty(self, ctx):
         r = "usher loaded."
         await ctx.send(r)
-"""
+
+
+    # TODO make file w/ markdown for proper introduction
     # new user direct message
     async def on_member_join(member):
         await member.create_dm()
@@ -34,6 +36,9 @@ class UsherCog(commands.Cog):
         )
 
 
+    # TODO make custom help dialogue
+
+"""
     # screen for naughties
     @bot.event
     async def on_teh_naughty(message):
