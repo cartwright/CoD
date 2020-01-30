@@ -16,7 +16,7 @@ from cogs.lawrence import LawrenceCog
 
 
 # globals
-logFILE = "/home/jeremy/codbot/logs/bots.log"
+logFILE = os.path.expanduser('codbot/logs/bots.log')
 # sensitive globals
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -88,7 +88,7 @@ async def cogReload(self, cog: str):
         self.bot.reload_extension(cog)
     except Exception as e:
         with open(logFILE, "a") as f:
-            await f.write(f'{e}{t}\n')
+            await f.write(f'BOT//cogReload//{e}//{t}\n')
 
 
 # shutdown bot
