@@ -34,6 +34,12 @@ class LawrenceCog(commands.Cog):
         return ctime
 
 
+    @commands.command(name="sweep", hidden=True)
+    @commands.is_owner()
+    async def sweep(self, ctx):
+        # Clear messages in the chat
+        await ctx.channel.purge()
+
 """
     # midnight counter TODO
     async def midnight():
@@ -47,12 +53,6 @@ class LawrenceCog(commands.Cog):
        await chanel.send(f'{channel} has been swept. Good day.')
 """
 
-""" # This works but is dangerous
-    @bot.command(name="sweep", help="clears all messages in chat")
-    async def sweep(ctx):
-        # Clear messages in the chat
-        await ctx.channel.purge()
-"""
 
 def setup(bot):
     bot.add_cog(LawrenceCog(bot))
