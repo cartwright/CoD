@@ -16,7 +16,7 @@ from discord.ext import commands
 
 
 # globals
-logFILE = "/home/jeremy/codbot/logs/bots.log"
+logFILE = os.path.expanduser('codbot/logs/bots.log')
 # sensitive globals
 load_dotenv()
 API_KEY = os.getenv('ESV_API_KEY')
@@ -35,7 +35,7 @@ class LutherCog(commands.Cog):
 
     # Retreive ESV bible verses
     @commands.command(name="verse", help="Retrieves an ESV bible verse.")
-    async def verse(self, ctx, p: str):
+    async def verse(self, ctx, *, p: str):
 
         global API_KEY
         global API_URL
