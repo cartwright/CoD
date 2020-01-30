@@ -8,9 +8,15 @@
 #  Created: Mon 27 Jan 2020 08:52:10 PM UTC
 #  usher: greeter/bouncer
 
+import os
 import discord
 from discord.ext import commands
+from cogs.lawrence import LawrenceCog
 
+
+# globals
+logFILE = os.path.expanduser('codbot/logs/bots.log')
+naughties = None
 
 class UsherCog(commands.Cog):
     """UsherCog: a greeter/bouncer"""
@@ -36,17 +42,41 @@ class UsherCog(commands.Cog):
         )
 
 
+    # checks for naughties // right now is just silly...
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.name == 'Usher':
+            return
+        await message.channel.send(f'{message.author.name} lol')
+
+
     # TODO make custom help dialogue
 
 """
-    # screen for naughties
-    @bot.event
-    async def on_teh_naughty(message):
-        #naughty = open('en').read().splitlines()
+    # loads and caches naughties
+    async def loadNaughties(screen = None):
+        global naughties
+        en = os.path.expanduser('codbot/en')
+        t = await LawrenceCog.getTime()
 
-        # print message content
-        await message.content
+        if not screen:
+            try:
+                with open(en) as f:
+                    screen = readlines()
+                    screen = [c.strip() for c in wordlist if c]
+            except Exception as e:
+                with open(logFILE, 'a') as f:
+                    f.write(f'USHER//loadNaughties//{e}//{t}\n')
+        naughties = screen
+
+
+    # fetches naughties
+    async def fetchNaughties():
+        if not naughties:
+            await loadNaughties()
+        return naughties
 """
+
 
 def setup(bot):
     bot.add_cog(UsherCog(bot))
