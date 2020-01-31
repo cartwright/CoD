@@ -16,7 +16,6 @@ from cogs.lawrence import LawrenceCog
 
 # globals
 logFILE = os.path.expanduser('codbot/logs/bots.log')
-naughties = None
 
 class UsherCog(commands.Cog):
     """UsherCog: a greeter/bouncer"""
@@ -29,7 +28,7 @@ class UsherCog(commands.Cog):
     @commands.command(name="usher", hidden=True)
     @commands.is_owner()
     async def ushty(self, ctx):
-        r = "usher loaded."
+        r = f"usher loaded."
         await ctx.send(r)
 
 
@@ -43,39 +42,48 @@ class UsherCog(commands.Cog):
 
 
     # checks for naughties // right now is just silly...
+    # getting closer. need to use regex. why won't loadScreen() work?
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.name == 'Usher':
-            return
-        await message.channel.send(f'{message.author.name} lol')
+        en = os.path.expanduser('codbot/en')
+        t = await LawrenceCog.getTime()
+        flag = None
 
+        try:
+            if message.author.name == 'Usher':
+                return
 
-    # TODO make custom help dialogue
+            m = message.content
+            words = m.split()
+            with open(en, 'r') as f:
+                screen = f.read()
+            for word in words:
+                if word in screen:
+                    flag = {word}
+            if flag:
+                await message.channel.send(f'{word} is prohibited.')
 
+        except Exception as e:
+            with open(logFILE, 'a') as f:
+                f.write(f'USHER//on_message//{e}//{t}\n')
 """
-    # loads and caches naughties
-    async def loadNaughties(screen = None):
-        global naughties
+
+    # loads and caches screen
+    async def loadScreen():
+        global screen
         en = os.path.expanduser('codbot/en')
         t = await LawrenceCog.getTime()
 
-        if not screen:
-            try:
-                with open(en) as f:
-                    screen = readlines()
-                    screen = [c.strip() for c in wordlist if c]
-            except Exception as e:
-                with open(logFILE, 'a') as f:
-                    f.write(f'USHER//loadNaughties//{e}//{t}\n')
-        naughties = screen
-
-
-    # fetches naughties
-    async def fetchNaughties():
-        if not naughties:
-            await loadNaughties()
-        return naughties
+        try:
+            with open(en, 'r') as f:
+                screen = f.read()
+                screen = [c.strip() for c in en if c]
+        except Exception as e:
+            with open(logFILE, 'a') as f:
+                f.write(f'USHER//loadScreen//{e}//{t}\n')
 """
+
+    # TODO make custom help dialogue
 
 
 def setup(bot):
