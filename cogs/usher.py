@@ -16,6 +16,7 @@ from cogs.lawrence import LawrenceCog
 
 # globals
 logFILE = os.path.expanduser('codbot/logs/bots.log')
+screen = []
 
 class UsherCog(commands.Cog):
     """UsherCog: a greeter/bouncer"""
@@ -28,7 +29,7 @@ class UsherCog(commands.Cog):
     @commands.command(name="usher", hidden=True)
     @commands.is_owner()
     async def ushty(self, ctx):
-        r = f"usher loaded."
+        r = f"usher loaded. {screen[3]}"
         await ctx.send(r)
 
 
@@ -41,47 +42,61 @@ class UsherCog(commands.Cog):
         )
 
 
+    # loads and caches screen
+    async def loadScreen(self):
+        # variables
+        en = os.path.expanduser('codbot/en')
+        t = await LawrenceCog.getTime()
+        global screen
+        # populate screen
+        try:
+            with open(en, 'r') as f:
+                screen = f.readlines()
+                screen = [c.strip() for c in screen]
+        # gracefully handle exceptions
+        except Exception as e:
+            with open(logFILE, 'a') as f:
+                f.write(f'USHER//loadScreen//{e}//{t}\n')
+
+
+    # tabulates history of repeat offenders
+    # is sending name of channel, need to define it
+    async def threeStrikes(self, chan, f: str):
+        await chan.send(f'{f} is prohibited.')
+
     # checks for naughties // right now is just silly...
     # getting closer. need to use regex. why won't loadScreen() work?
     @commands.Cog.listener()
     async def on_message(self, message):
+        # variables
         en = os.path.expanduser('codbot/en')
         t = await LawrenceCog.getTime()
+        global screen
         flag = None
-
+        chan = message.channel
+        # dont' reply to self
         try:
             if message.author.name == 'Usher':
                 return
-
+            # ensure list is populated
+            if not screen:
+                await self.loadScreen()
+            # prep message for screening
             m = message.content
             words = m.split()
-            with open(en, 'r') as f:
-                screen = f.read()
+            # screen message
             for word in words:
                 if word in screen:
-                    flag = {word}
+                    flag = word
+            # 3 strikes and you're out
             if flag:
-                await message.channel.send(f'{word} is prohibited.')
-
+                #await self.threeStrikes(flag, chan)
+                await message.channel.send(f'{flag} is prohibited')
+        # gracefully handle exceptions
         except Exception as e:
             with open(logFILE, 'a') as f:
                 f.write(f'USHER//on_message//{e}//{t}\n')
-"""
 
-    # loads and caches screen
-    async def loadScreen():
-        global screen
-        en = os.path.expanduser('codbot/en')
-        t = await LawrenceCog.getTime()
-
-        try:
-            with open(en, 'r') as f:
-                screen = f.read()
-                screen = [c.strip() for c in en if c]
-        except Exception as e:
-            with open(logFILE, 'a') as f:
-                f.write(f'USHER//loadScreen//{e}//{t}\n')
-"""
 
     # TODO make custom help dialogue
 
