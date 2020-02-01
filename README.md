@@ -35,6 +35,7 @@ import discord
 import requests
 import dotenv
 import tinydb
+```
 
 ## License
 [BSD-3-Clause](https://github.com/cartwright/CoD/blob/master/bsd3clause_license)
