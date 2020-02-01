@@ -29,7 +29,7 @@ class UsherCog(commands.Cog):
     @commands.command(name="usher", hidden=True)
     @commands.is_owner()
     async def ushty(self, ctx):
-        r = f"usher loaded. {screen[3]}"
+        r = f"usher loaded."
         await ctx.send(r)
 
 
@@ -60,12 +60,19 @@ class UsherCog(commands.Cog):
 
 
     # tabulates history of repeat offenders
-    # is sending name of channel, need to define it
-    async def threeStrikes(self, chan, f: str):
-        await chan.send(f'{f} is prohibited.')
+    # TODO tie information in with tinyDB
+    async def threeStrikes(self, f: str, cID, mID):
+        m = await cID.fetch_message(mID)
+        perp = {
+            'user': m.author,
+            'nick': m.author.nick,
+            'date': m.created_at,
+            'message': m.content,
+            'channel': m.channel
+        }
+        await m.channel.send(f'{perp["nick"]}, {f} is prohibited.')
 
-    # checks for naughties // right now is just silly...
-    # getting closer. need to use regex. why won't loadScreen() work?
+    # checks messages to screen for profanity
     @commands.Cog.listener()
     async def on_message(self, message):
         # variables
@@ -73,7 +80,6 @@ class UsherCog(commands.Cog):
         t = await LawrenceCog.getTime()
         global screen
         flag = None
-        chan = message.channel
         # dont' reply to self
         try:
             if message.author.name == 'Usher':
@@ -90,8 +96,9 @@ class UsherCog(commands.Cog):
                     flag = word
             # 3 strikes and you're out
             if flag:
-                #await self.threeStrikes(flag, chan)
-                await message.channel.send(f'{flag} is prohibited')
+                mID = message.id
+                cID = message.channel
+                await self.threeStrikes(flag, cID, mID)
         # gracefully handle exceptions
         except Exception as e:
             with open(logFILE, 'a') as f:
