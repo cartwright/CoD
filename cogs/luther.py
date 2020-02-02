@@ -13,6 +13,7 @@ import discord
 import requests
 from dotenv import load_dotenv
 from discord.ext import commands
+from cogs.lawrence import LawrenceCog
 
 
 # globals
@@ -30,13 +31,11 @@ class LutherCog(commands.Cog):
         self.bot = bot
 
 
-    # TODO change verse to accept **kwargs or *args and make linter
-
-
     # Retreive ESV bible verses
     @commands.command(name="verse", help="Retrieves an ESV bible verse.")
-    async def verse(self, ctx, *, p: str):
+    async def verse(self, message, *, p):
 
+        t = await LawrenceCog.getTime()
         global API_KEY
         global API_URL
         global logFILE
@@ -49,15 +48,15 @@ class LutherCog(commands.Cog):
                 'include-short-copyright': True,
                 'include-passage-references': False}
 
-            headers = {'Authorization': 'Token %s' % API_KEY}
+            headers = {'Authorization': f'Token {API_KEY}'}
 
             response = requests.get(API_URL, params=params, headers=headers)
             passages = response.json()['passages']
             p = passages[0].strip() if passages else 'Error: Not Found'
-            await ctx.send(p)
+            await message.channel.send(p)
         except Exception as e:
             with open(logFILE, "a") as f:
-                f.write(f'**ERROR: {type(e).__name__} - {e}\n')
+                f.write(f'LUTHER//verse//{e}//{t}\n')
 
 
     # TODO Concordance
