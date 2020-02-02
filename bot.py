@@ -70,7 +70,7 @@ async def on_command_error(ctx, error):
                        "I can do.")
     else :
         with open(logFILE, "a") as f:
-            f.write(f'{e}{t}\n')
+            f.write(f'{e}//{e.args}//{t}\n')
 
 
 # reload modules instead of killing codbot all the time...
