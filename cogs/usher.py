@@ -10,8 +10,11 @@
 
 import os
 import discord
+import random
 from discord.ext import commands
 from cogs.lawrence import LawrenceCog
+from cogs.luther import LutherCog
+from tinydb import TinyDB, Query
 
 
 # globals
@@ -60,17 +63,34 @@ class UsherCog(commands.Cog):
 
 
     # tabulates history of repeat offenders
-    # TODO tie information in with tinyDB
     async def threeStrikes(self, f: str, cID, mID):
+        # variables
         m = await cID.fetch_message(mID)
+        t = await LawrenceCog.getTime()
+        u = Query()
         perp = {
-            'user': m.author,
-            'nick': m.author.nick,
-            'date': m.created_at,
-            'message': m.content,
-            'channel': m.channel
+            'user': str(m.author),
+            'nick': str(m.author.display_name),
+            'date': str(m.created_at),
+            'message': str(m.content),
+            'channel': str(m.channel)
         }
-        await m.channel.send(f'{perp["nick"]}, {f} is prohibited.')
+        # save offense in database, count priors
+        try:
+            perpDB = TinyDB(os.path.expanduser('codbot/perpDB.json'))
+            perpDB.insert(perp)
+            s = len(perpDB.search(u.user == perp['user']))
+            perpDB.close()
+            with open(os.path.expanduser('codbot/swearScripture'), 'r') as f:
+                    vrs = f.read().splitlines()
+            v = random.choice(vrs)
+            await LutherCog.verse(self, m, p=v)
+            await m.delete()
+        # gracefully handle exceptions
+        except Exception as e:
+            with open(logFILE, 'a') as f:
+                f.write(f'USHER//threeStrikes//{e}//{t}\n')
+
 
     # checks messages to screen for profanity
     @commands.Cog.listener()
@@ -88,7 +108,7 @@ class UsherCog(commands.Cog):
             if not screen:
                 await self.loadScreen()
             # prep message for screening
-            m = message.content
+            m = message.content.lower()
             words = m.split()
             # screen message
             for word in words:
@@ -102,7 +122,7 @@ class UsherCog(commands.Cog):
         # gracefully handle exceptions
         except Exception as e:
             with open(logFILE, 'a') as f:
-                f.write(f'USHER//on_message//{e}//{t}\n')
+                f.write(f'USHER//on_message//{type(e)}//{e}//{t}\n')
 
 
     # TODO make custom help dialogue
