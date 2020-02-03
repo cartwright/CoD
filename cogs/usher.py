@@ -19,6 +19,7 @@ from tinydb import TinyDB, Query
 
 # globals
 logFILE = os.path.expanduser('codbot/logs/bots.log')
+welcomeFILE = os.path.expanduser('codbot/data/welcome.txt')
 screen = []
 
 class UsherCog(commands.Cog):
@@ -40,15 +41,19 @@ class UsherCog(commands.Cog):
     # new user direct message
     async def on_member_join(member):
         await member.create_dm()
-        await member.dm_channel.send(
-            f'Hi {member.name}, welcome to Concord on Discord!'
-        )
+        with open(welcomeFILE, 'r') as f:
+            welcome = f.read()
+        await member.dm_channel.send(welcome)
+
+
+    # TODO implement rules welcome page ala the Python discord
+    # the !accept is key. Don't see anything but rules, then !accept
 
 
     # loads and caches screen
     async def loadScreen(self):
         # variables
-        en = os.path.expanduser('codbot/en')
+        en = os.path.expanduser('codbot/data/en')
         t = await LawrenceCog.getTime()
         global screen
         # populate screen
@@ -75,16 +80,19 @@ class UsherCog(commands.Cog):
             'message': str(m.content),
             'channel': str(m.channel)
         }
-        # save offense in database, count priors
+        # If at first you fail...
         try:
-            perpDB = TinyDB(os.path.expanduser('codbot/perpDB.json'))
+            # save offense in database, count priors
+            perpDB = TinyDB(os.path.expanduser('codbot/data/perpDB.json'))
             perpDB.insert(perp)
             s = len(perpDB.search(u.user == perp['user']))
             perpDB.close()
-            with open(os.path.expanduser('codbot/swearScripture'), 'r') as f:
+            # call verse() on one of 19 verses re: importance of language
+            with open(os.path.expanduser('codbot/data/swearScripture'), 'r') as f:
                     vrs = f.read().splitlines()
             v = random.choice(vrs)
             await LutherCog.verse(self, m, p=v)
+            # Delete offending message. Still not sure bout this
             await m.delete()
         # gracefully handle exceptions
         except Exception as e:
@@ -96,12 +104,13 @@ class UsherCog(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         # variables
-        en = os.path.expanduser('codbot/en')
+        en = os.path.expanduser('codbot/data/en')
         t = await LawrenceCog.getTime()
         global screen
         flag = None
-        # dont' reply to self
+        # If at first you fail...
         try:
+            # dont' reply to self
             if message.author.name == 'Usher':
                 return
             # ensure list is populated
